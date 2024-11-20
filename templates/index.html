@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Card Game Lobby</title>
+</head>
+<body>
+    <h1>Lobby</h1>
+    <div id="lobby">
+        <h2>Connected Users:</h2>
+        <ul id="user-list"></ul>
+        <h2>Available Games:</h2>
+        <ul id="game-list"></ul>
+        <input type="text" id="game-id" placeholder="Game ID">
+        <button id="create-game">Create Game</button>
+        <button id="join-game">Join Game</button>
+    </div>
+
+    <div id="game" style="display: none;">
+        <h1>Game Room</h1>
+        <button id="leave-game">Leave Game</button>
+        <div id="game-info"></div>
+        <button id="draw-card">Draw Card</button>
+        <div id="hand"></div>
+        <div id="revealed-cards"></div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script src="/static/main.js"></script>
+</body>
+</html>

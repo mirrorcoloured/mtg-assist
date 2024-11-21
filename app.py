@@ -49,7 +49,7 @@ class Game:
 
 # In-memory storage
 lobby_users = set()
-games = {}
+games: dict[int, Game] = {}
 
 
 @app.route("/")
@@ -60,12 +60,16 @@ def index():
 @socketio.on("join_lobby")
 def handle_join_lobby(data):
     user_id = data["user_id"]
-    lobby_users.add(user_id)
-    emit(
-        "lobby_update",
-        {"users": list(lobby_users), "games": list(games.keys())},
-        broadcast=True,
-    )
+    if user_id not in lobby_users:
+        lobby_users.add(user_id)
+        emit(
+            "lobby_update",
+            {"users": list(lobby_users), "games": list(games.keys())},
+            broadcast=True,
+        )
+        emit("user_id_granted", {"user_id": user_id})
+    else:
+        emit("user_id_denied", {"user_id": user_id})
 
 
 @socketio.on("leave_lobby")

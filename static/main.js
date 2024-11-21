@@ -1,12 +1,25 @@
 const socket = io();
 
-let userId = 'user_' + Math.floor(Math.random() * 1000);
+// let userId = 'user_' + Math.floor(Math.random() * 1000);
+let userId = 'user_301';
 let currentGameId = null;
 let hand = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     // Join lobby
+
+    userId = prompt(`Please choose a username.`)
     socket.emit('join_lobby', { user_id: userId });
+
+    socket.on('user_id_granted', data => {
+        console.log('GRANTED');
+    });
+
+    socket.on('user_id_denied', data => {
+        console.log('DENIED');
+        userId = prompt(`Username ${userId} taken, please choose a new username.`);
+        socket.emit('join_lobby', { user_id: userId });
+    });
 
     socket.on('error', data => {
         alert(data.message);
@@ -15,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle lobby updates
     socket.on('lobby_update', data => {
         updateLobby(data);
+    });
+
+    window.addEventListener("beforeunload", function (e) {
+        socket.emit('leave_lobby', { user_id: userId });
     });
 
     // Create game
@@ -62,9 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateHand();
             } else if (event.target.textContent === "|Reveal|") {
                 let card = event.target.parentElement.getAttribute('x-card');
-            socket.emit('show_card', { game_id: currentGameId, user_id: userId, card: parseInt(card) });
-            hand = hand.filter(c => c != card);
-            updateHand();
+                socket.emit('show_card', { game_id: currentGameId, user_id: userId, card: parseInt(card) });
+                hand = hand.filter(c => c != card);
+                updateHand();
             }
         }
     });

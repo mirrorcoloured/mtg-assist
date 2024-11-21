@@ -1,0 +1,261 @@
+{
+  "3": {
+    "inputs": {
+      "seed": 51,
+      "steps": 7,
+      "cfg": 1.5,
+      "sampler_name": "lcm",
+      "scheduler": "sgm_uniform",
+      "denoise": 1,
+      "model": [
+        "51:1",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "4": {
+    "inputs": {
+      "ckpt_name": "sd15\\realcartoon3d_v11.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "5": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "6": {
+    "inputs": {
+      "text": "A watercolor illustration of a bespectacled mage sitting at a wooden table, surrounded by a cluttered workspace filled with quills, inkwells, and scattered papers. The mage's dominant hand is clenched into a fist, while their non-dominant hand appears limp and useless, as if frozen in place. A faint aura of defeat surrounds the figure, while a small, mischievous grin plays on the lips of the player to their left, who sits with an air of triumph, holding a quill pen aloft like a trophy. The entire scene is set against a warm, golden light that seems to emanate from the defeated mage's lost hand, as if it has been drained of its magical potential.",
+      "clip": [
+        "43",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "poor quality, amateur, blurry, ugly, bad hand, bad hands, mutated",
+      "clip": [
+        "43",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "13": {
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "20": {
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "22": {
+    "inputs": {
+      "sampling": "lcm",
+      "zsnr": false,
+      "model": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingDiscrete",
+    "_meta": {
+      "title": "ModelSamplingDiscrete"
+    }
+  },
+  "30": {
+    "inputs": {
+      "control_net_name": "CN1.1\\control_v11p_sd15_lineart.pth"
+    },
+    "class_type": "ControlNetLoader",
+    "_meta": {
+      "title": "Load ControlNet Model"
+    }
+  },
+  "31": {
+    "inputs": {
+      "image": "Mona Lisa square.jpg",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "32": {
+    "inputs": {
+      "coarse": "disable",
+      "resolution": 512
+    },
+    "class_type": "LineArtPreprocessor",
+    "_meta": {
+      "title": "Realistic Lineart"
+    }
+  },
+  "33": {
+    "inputs": {
+      "images": [
+        "53",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "42": {
+    "inputs": {
+      "image": "Firefly_Zoe.webp",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "43": {
+    "inputs": {
+      "lora_name": "sd15\\LCM_LoRA_Weights_SD15.safetensors",
+      "strength_model": 1,
+      "strength_clip": 1,
+      "model": [
+        "22",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  },
+  "53": {
+    "inputs": {
+      "detect_hand": "enable",
+      "detect_body": "enable",
+      "detect_face": "enable",
+      "resolution": 512,
+      "bbox_detector": "yolox_l.onnx",
+      "pose_estimator": "dw-ll_ucoco_384_bs5.torchscript.pt",
+      "scale_stick_for_xinsr_cn": "disable",
+      "image": [
+        "31",
+        0
+      ]
+    },
+    "class_type": "DWPreprocessor",
+    "_meta": {
+      "title": "DWPose Estimator"
+    }
+  },
+  "57": {
+    "inputs": {
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 512
+    },
+    "class_type": "DepthAnythingV2Preprocessor",
+    "_meta": {
+      "title": "Depth Anything V2 - Relative"
+    }
+  },
+  "51:0": {
+    "inputs": {
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.8,
+      "provider": "CUDA",
+      "model": [
+        "43",
+        0
+      ]
+    },
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "_meta": {
+      "title": "IPAdapter Unified Loader FaceID"
+    }
+  },
+  "51:1": {
+    "inputs": {
+      "weight": 0.5,
+      "weight_faceidv2": 0.5,
+      "weight_type": "linear",
+      "combine_embeds": "concat",
+      "start_at": 0,
+      "end_at": 1,
+      "embeds_scaling": "V only",
+      "model": [
+        "51:0",
+        0
+      ],
+      "ipadapter": [
+        "51:0",
+        1
+      ],
+      "image": [
+        "42",
+        0
+      ]
+    },
+    "class_type": "IPAdapterFaceID",
+    "_meta": {
+      "title": "IPAdapter FaceID"
+    }
+  }
+}

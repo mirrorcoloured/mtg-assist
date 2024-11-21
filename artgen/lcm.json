@@ -1,0 +1,139 @@
+{
+  "3": {
+    "inputs": {
+      "seed": 0,
+      "steps": 7,
+      "cfg": 1.5,
+      "sampler_name": "lcm",
+      "scheduler": "sgm_uniform",
+      "denoise": 1,
+      "model": [
+        "43",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "4": {
+    "inputs": {
+      "ckpt_name": "sd15\\realcartoon3d_v11.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Load Checkpoint"
+    }
+  },
+  "5": {
+    "inputs": {
+      "width": 512,
+      "height": 512,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
+  "6": {
+    "inputs": {
+      "text": "A surreal, dreamlike illustration of a player's hand being physically yanked out of their grasp by an ethereal, long-fingered hand from the left. The player's face contorts in a mix of shock and defeat as they slump backwards, surrounded by a dimly lit, smoke-filled room with candles flickering ominously in the background.\n\npoor quality, amateur, blurry, ugly, bad hand, abstract",
+      "clip": [
+        "43",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "poor quality, amateur, blurry, ugly, bad hand, abstract",
+      "clip": [
+        "43",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt)"
+    }
+  },
+  "13": {
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "20": {
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "22": {
+    "inputs": {
+      "sampling": "lcm",
+      "zsnr": false,
+      "model": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingDiscrete",
+    "_meta": {
+      "title": "ModelSamplingDiscrete"
+    }
+  },
+  "43": {
+    "inputs": {
+      "lora_name": "sd15\\LCM_LoRA_Weights_SD15.safetensors",
+      "strength_model": 1,
+      "strength_clip": 1,
+      "model": [
+        "22",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ]
+    },
+    "class_type": "LoraLoader",
+    "_meta": {
+      "title": "Load LoRA"
+    }
+  }
+}

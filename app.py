@@ -33,7 +33,7 @@ class Game:
 
     def draw_card(self, player_id):
         if self.deck and len(self.deck) > 0:
-            card = self.deck.pop(0)
+            card: dict = self.deck.pop(0)
             self.players[player_id]["hand"].append(card)
             return card
         else:
@@ -98,6 +98,8 @@ def handle_disconnect():
                 games[game_id].get_state(),
                 room=game_id,
             )
+            if not games[game_id].players:
+                del games[game_id]
         del sid_userid[sid]
         del userid_sid[user_id]
         lobby_users.discard(sid)
@@ -222,9 +224,9 @@ def handle_discard_card(data):
         emit("error", {"message": "Invalid game or user"})
 
 
-@socketio.on("show_card")
+@socketio.on("reveal_card")
 def handle_show_card(data):
-    print("show_card", sid_userid[request.sid], data)
+    print("reveal_card", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]

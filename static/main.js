@@ -47,14 +47,25 @@ document.addEventListener('DOMContentLoaded', () => {
         updateHand();
     });
 
+    // Handle card discarded
+    socket.on('card_discarded', data => {
+        updateHand();
+    });
+
     // Show card
     document.getElementById('hand').addEventListener('click', event => {
-        if (event.target.tagName === 'LI') {
-            let card = event.target.textContent;
+        if (event.target.tagName === 'SPAN' && event.target.parentElement.tagName === 'LI') {
+            if (event.target.textContent === "|Discard|") {
+                let card = event.target.parentElement.getAttribute('x-card');
+                socket.emit('discard_card', { game_id: currentGameId, user_id: userId, card: parseInt(card) });
+                hand = hand.filter(c => c != card);
+                updateHand();
+            } else if (event.target.textContent === "|Reveal|") {
+                let card = event.target.parentElement.getAttribute('x-card');
             socket.emit('show_card', { game_id: currentGameId, user_id: userId, card: parseInt(card) });
-            // Remove card from hand
             hand = hand.filter(c => c != card);
             updateHand();
+            }
         }
     });
 
@@ -69,22 +80,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateLobby(data) {
+
+    function createLiWith(text) {
+        const li = document.createElement('li');
+        li.textContent = text;
+        return li
+    }
     // Update user list
     let userList = document.getElementById('user-list');
     userList.innerHTML = '';
+    const myli = createLiWith(`${userId}`);
+    const myb = document.createElement('b');
+    myb.appendChild(myli)
+    userList.appendChild(myb);
     data.users.forEach(user => {
-        let li = document.createElement('li');
-        li.textContent = user;
-        userList.appendChild(li);
+        if (user != userId) {
+            userList.appendChild(createLiWith(user));
+        }
     });
 
     // Update game list
     let gameList = document.getElementById('game-list');
     gameList.innerHTML = '';
     data.games.forEach(game => {
-        let li = document.createElement('li');
-        li.textContent = game;
-        gameList.appendChild(li);
+        gameList.appendChild(createLiWith(game));
     });
 }
 
@@ -115,12 +134,21 @@ function updateGame(data) {
 }
 
 function updateHand() {
-    let handDiv = document.getElementById('hand');
-    handDiv.innerHTML = '<h2>Your Hand (Click a card to reveal):</h2>';
-    let handList = document.createElement('ul');
+    const handDiv = document.getElementById('hand');
+    handDiv.innerHTML = '<h2>Your Hand</h2>';
+    const handList = document.createElement('ul');
     hand.forEach(card => {
-        let li = document.createElement('li');
-        li.textContent = card;
+        const li = document.createElement('li');
+        const e_title = document.createElement('span');
+        const e_discard = document.createElement('span');
+        const e_reveal = document.createElement('span');
+        li.setAttribute('x-card', card);
+        e_title.textContent = card;
+        e_discard.textContent = "|Discard|";
+        e_reveal.textContent = "|Reveal|";
+        li.appendChild(e_title);
+        li.appendChild(e_discard);
+        li.appendChild(e_reveal);
         handList.appendChild(li);
     });
     handDiv.appendChild(handList);

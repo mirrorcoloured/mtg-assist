@@ -13,6 +13,7 @@ class Game:
         self.game_id = game_id
         self.players = {}
         self.deck = self.create_deck()
+        self.shuffle_deck()
         self.revealed_cards = {}
         self.add_player(creator)
 
@@ -20,13 +21,21 @@ class Game:
         # Simple deck of cards (e.g., numbers 1-52)
         return list(range(1, 53))
 
+    def shuffle_deck(self):
+        random.shuffle(self.deck)
+
     def draw_card(self, player_id):
-        if self.deck:
-            card = self.deck.pop(random.randrange(len(self.deck)))
+        if self.deck and len(self.deck) > 0:
+            card = self.deck.pop(0)
             self.players[player_id]["hand"].append(card)
             return card
         else:
             return None
+
+    def discard_card(self, player_id, card):
+        if card in self.players[player_id]["hand"]:
+            self.players[player_id]["hand"].remove(card)
+            self.deck.append(card)
 
     def add_player(self, player_id):
         self.players[player_id] = {"hand": [], "revealed": []}
@@ -106,6 +115,22 @@ def handle_draw_card(data):
         card = games[game_id].draw_card(user_id)
         if card:
             emit("card_drawn", {"card": card}, room=request.sid)
+            emit("game_update", get_game_state(game_id), room=game_id)
+        else:
+            emit("no_cards_left", room=request.sid)
+    else:
+        emit("error", {"message": "Invalid game or user"}, room=request.sid)
+
+
+@socketio.on("discard_card")
+def handle_discard_card(data):
+    game_id = data["game_id"]
+    user_id = data["user_id"]
+    card = data["card"]
+    if game_id in games and user_id in games[game_id].players:
+        games[game_id].discard_card(user_id, card)
+        if card:
+            emit("card_discarded", {"card": card}, room=request.sid)
             emit("game_update", get_game_state(game_id), room=game_id)
         else:
             emit("no_cards_left", room=request.sid)

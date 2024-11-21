@@ -23,8 +23,7 @@ class Game:
         self.add_player(creator)
 
     def create_deck(self):
-        # return list(range(1, 53))
-        with open("deck.json", "r") as f:
+        with open("./decks/objectives_v1.json", "r") as f:
             cards = json.load(f)
             return cards
 

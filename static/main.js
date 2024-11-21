@@ -95,7 +95,7 @@ function updateGame(data) {
 
     // Update game info
     let gameInfo = document.getElementById('game-info');
-    gameInfo.innerHTML = '<h2>Players:</h2>';
+    gameInfo.innerHTML = `<p>Cards in deck: ${data['deck_size']}</p><h2>Players:</h2>`;
     let playerList = document.createElement('ul');
     data.players.forEach(player => {
         let li = document.createElement('li');

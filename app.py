@@ -163,6 +163,7 @@ def get_game_state(game_id):
             }
             for pid, info in game.players.items()
         ],
+        "deck_size": len(game.deck),
         "revealed_cards": game.revealed_cards,
     }
 

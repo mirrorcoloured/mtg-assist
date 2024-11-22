@@ -6,15 +6,23 @@
     <link type="text/css" rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <h1>Lobby</h1>
     <div id="lobby">
-        <h2>Connected Users:</h2>
-        <ul id="user-list"></ul>
-        <h2>Available Games:</h2>
-        <ul id="game-list"></ul>
+        <h1>Lobby</h1>
+        <div class="columns">
+            <div class="column">
+                <h2>Connected Users:</h2>
+                <ul id="user-list"></ul>
+            </div>
+            <div class="column">
+                <h2>Available Games:</h2>
+                <ul id="game-list"></ul>
+            </div>
+        </div>
         <input type="text" id="game-id" placeholder="Game ID">
-        <button id="create-game">Create Game</button>
-        <button id="join-game">Join Game</button>
+        <div>
+            <button id="create-game">Create Game</button>
+            <button id="join-game">Join Game</button>
+        </div>
     </div>
 
     <div id="game" style="display: none;">
@@ -22,6 +30,7 @@
         <button id="leave-game">Leave Game</button>
         <h2>Players:</h2>
         <ul id="player-list"></ul>
+        <hr>
         <div id="game-info"></div>
         <button id="draw-card">Draw Card</button>
         <h2>Your Hand:</h2>

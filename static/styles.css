@@ -1,7 +1,109 @@
-button {
-    border-radius: 5px;
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    /* background-color: #f5f5f5;
+    color: #333; */
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    /* color: #444; */
+    color: #ffffff;
+}
+
+#lobby, #game {
+    /* background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    background: #1e1e1e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Flex Container for Columns */
+#lobby .columns {
+    display: flex;
+    gap: 20px;
+}
+
+/* Individual Column Styling */
+.column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.column h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    /* color: #666;
+    border-bottom: 2px solid #eaeaea; */
+    color: #e0e0e0;
+    border-bottom: 2px solid #444444;
+}
+
+/* Lists */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#user-list li,
+#game-list li {
+    font-size: 1.1rem;
+    margin: 5px 0;
+    padding: 8px 10px;
+    border-radius: 4px;
+    /* background-color: #f9f9f9;
+    border: 1px solid #ddd; */
+    background-color: #2b2b2b;
+    border: 1px solid #444444;
+}
+
+/* Input and Buttons */
+#game-id {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-top: 15px;
+    font-size: 1rem;
+    border-radius: 4px;
+    /* border: 1px solid #ccc; */
+    background-color: #2b2b2b;
+    color: #ffffff;
+    border: 1px solid #444444;
+}
+
+button {
+    font-size: 1rem;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #20326d;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #5166aa;
+}
+
+/* card display */
 .card_div {
     margin: 3px;
     border: 3px solid black;
@@ -13,8 +115,8 @@ button {
     flex-direction: column;
     align-items: center;
     background-color: antiquewhite;
+    color: black;
 }
-
 .card_name {
     display: block;
     text-align: center;
@@ -22,14 +124,12 @@ button {
     margin-top: 5px;
     margin-bottom: 5px;
 }
-
 .card_image {
     display: block;
     text-align: center;
     max-width: 250px;
     border: 1px solid black;
 }
-
 .card_description {
     text-align: center;
     width: 100%;
@@ -39,25 +139,20 @@ button {
     margin-bottom: auto;
 }
 
+/* show lists of cards horizontally without bullets */
 ul.card-list {
     list-style-type: none;
 }
-
 ul.card-list > li {
     display: inline-block;
 }
 
-div.hand-card {
-    
-}
-
-/* turn div#hand into a ul and add class ul.cardlist? */
+/* distribute card actions below card */
 div.card-actions {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
 }
-
 button.card-action {
     display: block;
     border-radius: 5px;

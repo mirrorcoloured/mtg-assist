@@ -19,6 +19,15 @@ h1 {
     color: #ffffff;
 }
 
+#lobby {
+    display: flex;
+    flex-direction: column;
+}
+
+#game {
+    display: block;
+}
+
 #lobby, #game {
     /* background: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
@@ -28,8 +37,6 @@ h1 {
     padding: 20px;
     max-width: 800px;
     width: 100%;
-    display: flex;
-    flex-direction: column;
     gap: 20px;
 }
 
@@ -80,6 +87,7 @@ ul {
     width: calc(100% - 22px);
     padding: 10px;
     margin-top: 15px;
+    margin-bottom: 15px;
     font-size: 1rem;
     border-radius: 4px;
     /* border: 1px solid #ccc; */
@@ -101,6 +109,16 @@ button {
 
 button:hover {
     background-color: #5166aa;
+}
+
+select {
+    font-size: 1rem;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #41206d;
+    color: #fff;
 }
 
 /* card display */
@@ -137,6 +155,7 @@ button:hover {
     align-self: center;
     margin-top: auto;
     margin-bottom: auto;
+    overflow: hidden;
 }
 
 /* show lists of cards horizontally without bullets */

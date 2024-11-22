@@ -23,8 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Request to create game
     document.getElementById("create-game").addEventListener("click", () => {
-        let gameId = document.getElementById("game-id-input").value;
-        socket.emit("create_game", { game_id: gameId, user_id: userId });
+        const gameId = document.getElementById("game-id-input").value;
+        const deckName = document.getElementById("deck-select").value;
+        socket.emit("create_game", { game_id: gameId, user_id: userId, deckName: deckName });
     });
 
     // Response to user or game lists changing
@@ -157,7 +158,7 @@ function enterGame() {
 
 function enterLobby() {
     document.getElementById("game").style.display = "none";
-    document.getElementById("lobby").style.display = "block";
+    document.getElementById("lobby").style.display = "flex";
 }
 
 function createCardElement(card, in_hand = false) {
@@ -177,6 +178,7 @@ function createCardElement(card, in_hand = false) {
     const e_description = document.createElement("span");
     e_description.classList.add("card_description")
     e_description.textContent = card.Description;
+    e_description.title = card.Description;
     e_carddiv.appendChild(e_description);
 
     if (in_hand) {

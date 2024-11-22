@@ -18,11 +18,21 @@
                 <ul id="game-list"></ul>
             </div>
         </div>
-        <input type="text" id="game-id-input" placeholder="Game ID">
         <div>
-            <button id="create-game">Create Game</button>
-            <button id="join-game">Join Game</button>
+            <hr></hr>
+            <input type="text" id="game-id-input" placeholder="Game Name">
+            <div>
+                <select id="deck-select">
+                    {% for choice in deck_choices %}
+                    <option value="{{ choice }}">{{ choice }}</option>
+                    {% endfor %}
+                </select>
+                <button id="create-game">Create Game</button>
+                <button id="join-game">Join Game</button>
+            </div>
         </div>
+
+        <div class="card_div"><span class="card_name">King</span><img class="card_image" src="art/secret_kingdoms_5-42c9f8ac.png"><span class="card_description">You begin the game with 10 extra life. You win by surviving alone or with the KNIGHT. If you are defeated by the USURPER exchange roles with them (if this happens during your turn end it). As the new USURPER your life total becomes 5. Reset all commander damage done to you and any counters put on you.</span></div>
     </div>
 
     <div id="game" style="display: none;">

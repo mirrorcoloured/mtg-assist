@@ -81,7 +81,12 @@ lobby_users = set()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    deck_files = os.listdir("./decks")
+    deck_choices = [os.path.splitext(f)[0] for f in deck_files]
+    return render_template(
+        "index.html",
+        deck_choices=deck_choices,
+    )
 
 
 @app.route("/art/<path:path>")
@@ -162,8 +167,9 @@ def handle_create_game(data):
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
+    deck_name = data["deckName"]
     if game_id not in games and game_id not in ["lobby"]:
-        games[game_id] = Game(game_id, user_id)
+        games[game_id] = Game(game_id, user_id, deck_name)
         emit("game_created", {"game_id": game_id})
 
         # join game

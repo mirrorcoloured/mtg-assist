@@ -84,15 +84,8 @@ def index():
 
 
 @app.route("/art/<path:path>")
-def send_report(path):
+def get_art(path):
     return send_from_directory("./art/", path)
-
-
-@app.route("/art")
-def get_art():
-    print("requested art")
-    # /artgen/art/objectives_v1-e4b48918.png
-    return "ok"
 
 
 @socketio.on("connect")
@@ -120,8 +113,8 @@ def handle_disconnect():
                 empty_games.append(game_id)
 
         # remove empty games
-        # for game_id in empty_games:
-        #     del games[game_id]
+        for game_id in empty_games:
+            del games[game_id]
 
         # remove player from tracking
         del sid_userid[sid]

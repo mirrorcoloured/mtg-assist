@@ -1,7 +1,6 @@
 const socket = io();
 
-// let userId = prompt(`Please choose a username.`);
-let userId = 'fooz';
+let userId = prompt(`Please choose a username.`);
 let currentGameId = null;
 let hand = [];
 

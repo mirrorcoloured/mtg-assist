@@ -31,21 +31,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // Response to user or game lists changing
     socket.on("lobby_update", (data) => {
         console.log("lobby_update", data);
-        function createLiWith(text) {
-            const li = document.createElement("li");
-            li.textContent = text;
-            return li;
-        }
         // Update user list
         let userList = document.getElementById("user-list");
         userList.innerHTML = "";
-        const myli = createLiWith(`${userId}`);
+        const e_my_li = document.createElement("li");
+        e_my_li.textContent = `${userId}`;
         const myb = document.createElement("b");
-        myb.appendChild(myli);
+        myb.appendChild(e_my_li);
         userList.appendChild(myb);
         data.users.forEach((user) => {
             if (user != userId) {
-                userList.appendChild(createLiWith(user));
+                const e_user_li = document.createElement("li");
+                e_user_li.textContent = user;
+                userList.appendChild(e_user_li);
             }
         });
 
@@ -53,7 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
         let gameList = document.getElementById("game-list");
         gameList.innerHTML = "";
         data.games.forEach((game) => {
-            gameList.appendChild(createLiWith(game));
+            const e_game_li = document.createElement("li");
+            e_game_li.textContent = game;
+            e_game_li.classList.add("gamelink");
+            gameList.appendChild(e_game_li);
+            e_game_li.addEventListener("click", e => {
+                let gameId = document.getElementById("game-id-input").value;
+                socket.emit("join_game", { game_id: game, user_id: userId });
+            })
         });
     });
 

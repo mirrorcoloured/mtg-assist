@@ -76,7 +76,7 @@ ul {
 }
 
 /* Input and Buttons */
-#game-id {
+#game-id-input {
     width: calc(100% - 22px);
     padding: 10px;
     margin-top: 15px;
@@ -133,7 +133,7 @@ button:hover {
 .card_description {
     text-align: center;
     width: 100%;
-    vertical-align: middle; */
+    vertical-align: middle;
     align-self: center;
     margin-top: auto;
     margin-bottom: auto;

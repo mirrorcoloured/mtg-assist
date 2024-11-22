@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Request to create game
     document.getElementById("create-game").addEventListener("click", () => {
-        let gameId = document.getElementById("game-id").value;
+        let gameId = document.getElementById("game-id-input").value;
         socket.emit("create_game", { game_id: gameId, user_id: userId });
     });
 
@@ -59,16 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Request to join game
     document.getElementById("join-game").addEventListener("click", () => {
-        let gameId = document.getElementById("game-id").value;
+        let gameId = document.getElementById("game-id-input").value;
         socket.emit("join_game", { game_id: gameId, user_id: userId });
     });
 
     // Response to join game
     socket.on("game_joined", (data) => {
         console.log("game_joined", data);
-        document.getElementById("lobby").style.display = "none";
-        document.getElementById("game").style.display = "block";
+        enterGame();
         currentGameId = data["game_id"];
+        document.getElementById("game-id").textContent = currentGameId;
     });
 
     // IN GAME

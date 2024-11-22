@@ -1,2 +1,5 @@
 flask
 flask-socketio
+python-dotenv
+httpx
+websocket-client

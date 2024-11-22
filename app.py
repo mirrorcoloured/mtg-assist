@@ -165,6 +165,17 @@ def handle_create_game(data):
     if game_id not in games and game_id not in ["lobby"]:
         games[game_id] = Game(game_id, user_id)
         emit("game_created", {"game_id": game_id})
+
+        # join game
+        join_room(game_id, sid)
+        games[game_id].add_player(user_id)
+        emit("game_joined", {"game_id": game_id})
+        send_game_update(game_id)
+
+        # leave lobby
+        leave_room("lobby", sid)
+        lobby_users.discard(sid)
+
         send_lobby_update()
     else:
         emit("error", {"message": f"Game ID {game_id} already exists."})

@@ -153,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function enterGame() {
     document.getElementById("game").style.display = "block";
     document.getElementById("lobby").style.display = "none";
+    updateHand();
 }
 
 function enterLobby() {

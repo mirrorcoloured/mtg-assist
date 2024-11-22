@@ -1,3 +1,4 @@
+import os
 import random
 import json
 
@@ -85,7 +86,13 @@ def index():
 
 @app.route("/art/<path:path>")
 def get_art(path):
-    return send_from_directory("./art/", path)
+    if os.path.isfile(os.path.join("./art/", path)):
+        return send_from_directory("./art/", path)
+    else:
+        choices = os.listdir("./art/404s")
+        random.seed(path)
+        choice = random.choice(choices)
+        return send_from_directory("./art/404s", choice)
 
 
 @socketio.on("connect")

@@ -1,6 +1,7 @@
 const socket = io();
 
-let userId = prompt(`Please choose a username.`);
+// let userId = prompt(`Please choose a username.`);
+let userId = 'fooz';
 let currentGameId = null;
 let hand = [];
 
@@ -77,24 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
         socket.emit("draw_card", { game_id: currentGameId, user_id: userId });
     });
 
-    // Request to reveal card
-    document.getElementById("hand").addEventListener("click", (event) => {
-        console.log("CLICK", event.target.tagName, event.target.parentElement.tagName, event.target.textContent);
-        if (event.target.tagName === "SPAN" && event.target.parentElement.tagName === "DIV") {
-            if (event.target.textContent === "|Discard|") {
-                let card = event.target.parentElement.getAttribute("x-card");
-                socket.emit("discard_card", { game_id: currentGameId, user_id: userId, card: JSON.parse(card) });
-                hand = hand.filter((c) => c != card);
-                updateHand();
-            } else if (event.target.textContent === "|Reveal|") {
-                let card = event.target.parentElement.getAttribute("x-card");
-                socket.emit("reveal_card", { game_id: currentGameId, user_id: userId, card: JSON.parse(card) });
-                hand = hand.filter((c) => c != card);
-                updateHand();
-            }
-        }
-    });
-
     // Request to leave game
     document.getElementById("leave-game").addEventListener("click", () => {
         socket.emit("leave_game", { game_id: currentGameId, user_id: userId });
@@ -135,15 +118,22 @@ document.addEventListener("DOMContentLoaded", () => {
         revealedList.innerHTML = "";
         // revealedList.innerHTML = "<h2>Revealed Cards:</h2>";
         for (const [playerId, cards] of Object.entries(data.revealed_cards)) {
-            const e_li = document.createElement("li");
+            const e_player_li = document.createElement("li");
+            revealedList.appendChild(e_player_li);
+            
             const e_span = document.createElement("span");
-            // e_span.textContent = `Player ${playerId} revealed: ${cards.join(", ")}`;
             e_span.textContent = `Player ${playerId} revealed:`;
-            e_li.appendChild(e_span);
+            e_player_li.appendChild(e_span);
+            
+            const e_ul = document.createElement("ul");
+            e_ul.classList.add("card-list");
+            e_player_li.appendChild(e_ul);
+            
             for (const card of cards) {
-                e_li.appendChild(createCardElement(card));
+                const e_card_li = document.createElement("li");
+                e_ul.appendChild(e_card_li);
+                e_card_li.appendChild(createCardElement(card));
             }
-            revealedList.appendChild(e_li);
         }
     });
 
@@ -166,39 +156,69 @@ function enterLobby() {
 }
 
 function createCardElement(card, in_hand = false) {
-    const e_div = document.createElement("div");
-    e_div.setAttribute("x-card", JSON.stringify(card));
-    e_div.classList.add("card");
+    const e_carddiv = document.createElement("div");
+    e_carddiv.classList.add("card_div");
 
-    const e_title = document.createElement("span");
-    e_title.textContent = card.ShortText;
-    e_title.title = card.LongText;
-    e_div.appendChild(e_title);
+    const e_name = document.createElement("span");
+    e_name.classList.add("card_name")
+    e_name.textContent = card.Name;
+    e_carddiv.appendChild(e_name);
+
+    const e_image = document.createElement("img");
+    e_image.classList.add("card_image")
+    e_image.src = card.Path;
+    e_carddiv.appendChild(e_image);
+
+    const e_description = document.createElement("span");
+    e_description.classList.add("card_description")
+    e_description.textContent = card.Description;
+    e_carddiv.appendChild(e_description);
 
     if (in_hand) {
-        const e_discard = document.createElement("span");
-        e_discard.textContent = "|Discard|";
-        e_discard.classList.add("clickable");
-        e_div.appendChild(e_discard);
+        const e_handcard_div = document.createElement("div");
+        e_handcard_div.classList.add("hand-card")
+        e_handcard_div.appendChild(e_carddiv)
 
-        const e_reveal = document.createElement("span");
-        e_reveal.textContent = "|Reveal|";
-        e_reveal.classList.add("clickable");
-        e_div.appendChild(e_reveal);
+        const e_actions = document.createElement("div");
+        e_actions.classList.add("card-actions");
+        e_handcard_div.appendChild(e_actions);
+
+        const e_discard = document.createElement("button");
+        e_discard.classList.add("card-action");
+        e_discard.textContent = "Discard";
+        // Request to discard card
+        e_discard.addEventListener("click", e => {
+            console.log("click", "discard", {card, hand, e})
+            socket.emit("discard_card", { game_id: currentGameId, user_id: userId, card: card });
+            hand = hand.filter((c) => c != JSON.stringify(card));
+            updateHand();
+        })
+        e_actions.appendChild(e_discard);
+
+        const e_reveal = document.createElement("button");
+        e_reveal.classList.add("card-action");
+        e_reveal.textContent = "Reveal";
+        // Request to reveal card
+        e_reveal.addEventListener("click", e => {
+            console.log("click", "reveal", {card, hand, e})
+            socket.emit("reveal_card", { game_id: currentGameId, user_id: userId, card: card });
+            hand = hand.filter((c) => c != JSON.stringify(card));
+            updateHand();
+        })
+        e_actions.appendChild(e_reveal);
+        return e_handcard_div;
+    } else {
+        return e_carddiv;
     }
-
-    return e_div;
 }
 
 function updateHand() {
     const handDiv = document.getElementById("hand");
     handDiv.innerHTML = "";
-    const handList = document.createElement("ul");
     hand.forEach((card_str) => {
         const card = JSON.parse(card_str);
         const li = document.createElement("li");
         li.appendChild(createCardElement(card, (in_hand = true)));
-        handList.appendChild(li);
+        handDiv.appendChild(li);
     });
-    handDiv.appendChild(handList);
 }

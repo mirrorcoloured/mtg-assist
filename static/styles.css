@@ -1,12 +1,64 @@
-li > div > span {
-    padding-right: 10px;
+button {
+    border-radius: 5px;
 }
 
-div.card {
-    padding-bottom: 10px;
+.card_div {
+    margin: 3px;
+    border: 3px solid black;
+    border-radius: 5px;
+    width: 250px;
+    height: 350px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: antiquewhite;
 }
 
-span.clickable {
+.card_name {
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.card_image {
+    display: block;
+    text-align: center;
+    max-width: 250px;
     border: 1px solid black;
-    padding: 2px;
+}
+
+.card_description {
+    text-align: center;
+    width: 100%;
+    vertical-align: middle; */
+    align-self: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+ul.card-list {
+    list-style-type: none;
+}
+
+ul.card-list > li {
+    display: inline-block;
+}
+
+div.hand-card {
+    
+}
+
+/* turn div#hand into a ul and add class ul.cardlist? */
+div.card-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+button.card-action {
+    display: block;
+    border-radius: 5px;
 }

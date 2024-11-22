@@ -4,6 +4,7 @@ import uuid
 import urllib.request
 import urllib.parse
 import hashlib
+from pathlib import Path
 
 import dotenv
 import httpx
@@ -116,7 +117,7 @@ def hash_text(prompt):
 
 
 def lcm(
-    filename: str,
+    filepath: Path,
     promptpos: str,
     promptneg: str = "poor quality, amateur, blurry, ugly, bad hand, abstract",
     seed: int = "0",
@@ -124,6 +125,7 @@ def lcm(
     steps: int = "7",
     scheduler: str = "sgm_uniform",
     checkpoint: str = "sd15\\realcartoon3d_v11.safetensors",
+    overwrite: bool = False,
 ):
     with open("lcm.json", "r") as f:
         prompt = json.load(f)
@@ -138,8 +140,11 @@ def lcm(
 
     outputs = get_images(prompt)
     output_bytes = outputs["20"][0]
-    with open(os.path.join("art", filename), "wb") as f:
-        f.write(output_bytes)
+    if os.path.isfile(filepath) and not overwrite:
+        print(f"File already exists: {filepath}")
+    else:
+        with open(filepath, "wb") as f:
+            f.write(output_bytes)
 
 
 def ollama_chat(

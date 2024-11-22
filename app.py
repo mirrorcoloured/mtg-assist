@@ -1,8 +1,10 @@
 import random
 import json
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from flask_socketio import SocketIO, join_room, leave_room, emit
+
+from artgen.genart import card_filename
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "abetting irritated diamonds"
@@ -14,17 +16,19 @@ socketio = SocketIO(
 
 # Data structures to store lobby and game information
 class Game:
-    def __init__(self, game_id, creator):
+    def __init__(self, game_id, creator, deckname="objectives_v1"):
         self.game_id = game_id
         self.players = {}
-        self.deck = self.create_deck()
+        self.deck = self.create_deck(deckname)
         self.shuffle_deck()
         self.revealed_cards = {}
         self.add_player(creator)
 
-    def create_deck(self):
-        with open("./decks/objectives_v1.json", "r") as f:
+    def create_deck(self, name):
+        with open(f"./decks/{name}.json", "r") as f:
             cards = json.load(f)
+            for card in cards:
+                card["Path"] = "art/" + card_filename(name, card)
             return cards
 
     def shuffle_deck(self):
@@ -79,6 +83,18 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/art/<path:path>")
+def send_report(path):
+    return send_from_directory("./art/", path)
+
+
+@app.route("/art")
+def get_art():
+    print("requested art")
+    # /artgen/art/objectives_v1-e4b48918.png
+    return "ok"
+
+
 @socketio.on("connect")
 def handle_connect(data):
     print("connect", data, request.sid)
@@ -90,6 +106,9 @@ def handle_disconnect():
     sid = request.sid
     if sid in sid_userid:
         user_id = sid_userid[sid]
+
+        # remove player from games
+        empty_games = []
         for game_id, game in games.items():
             game.remove_player(user_id)
             socketio.emit(
@@ -98,10 +117,17 @@ def handle_disconnect():
                 room=game_id,
             )
             if not games[game_id].players:
-                del games[game_id]
+                empty_games.append(game_id)
+
+        # remove empty games
+        # for game_id in empty_games:
+        #     del games[game_id]
+
+        # remove player from tracking
         del sid_userid[sid]
         del userid_sid[user_id]
         lobby_users.discard(sid)
+
         send_lobby_update()
 
 
@@ -253,6 +279,7 @@ def send_lobby_update():
         },
         to="lobby",
     )
+    print("sent lobby update", "sid_userid", sid_userid, "userid_sid", userid_sid)
 
 
 def send_game_update(game_id):

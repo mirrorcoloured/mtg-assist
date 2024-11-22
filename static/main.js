@@ -93,9 +93,9 @@ document.addEventListener("DOMContentLoaded", () => {
         updateHand();
     });
 
-    // Response to discarding card
-    socket.on("card_discarded", (data) => {
-        console.log("card_discarded", data);
+    // Response to cycling card
+    socket.on("card_recycled", (data) => {
+        console.log("card_recycled", data);
         updateHand();
     });
 
@@ -183,17 +183,17 @@ function createCardElement(card, in_hand = false) {
         e_actions.classList.add("card-actions");
         e_handcard_div.appendChild(e_actions);
 
-        const e_discard = document.createElement("button");
-        e_discard.classList.add("card-action");
-        e_discard.textContent = "Discard";
-        // Request to discard card
-        e_discard.addEventListener("click", e => {
-            console.log("click", "discard", {card, hand, e})
-            socket.emit("discard_card", { game_id: currentGameId, user_id: userId, card: card });
+        const e_recycle = document.createElement("button");
+        e_recycle.classList.add("card-action");
+        e_recycle.textContent = "Recycle";
+        // Request to recycle card
+        e_recycle.addEventListener("click", e => {
+            console.log("click", "recycle", {card, hand, e})
+            socket.emit("recycle_card", { game_id: currentGameId, user_id: userId, card: card });
             hand = hand.filter((c) => c != JSON.stringify(card));
             updateHand();
         })
-        e_actions.appendChild(e_discard);
+        e_actions.appendChild(e_recycle);
 
         const e_reveal = document.createElement("button");
         e_reveal.classList.add("card-action");

@@ -42,7 +42,7 @@ class Game:
         else:
             return None
 
-    def discard_card(self, player_id, card):
+    def recycle_card(self, player_id, card):
         if card in self.players[player_id]["hand"]:
             self.players[player_id]["hand"].remove(card)
             self.deck.append(card)
@@ -234,16 +234,16 @@ def handle_draw_card(data):
         emit("error", {"message": "Invalid game or user"})
 
 
-@socketio.on("discard_card")
-def handle_discard_card(data):
-    print("discard_card", sid_userid[request.sid], data)
+@socketio.on("recycle_card")
+def handle_recycle_card(data):
+    print("recycle_card", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
     card = data["card"]
     if game_id in games and user_id in games[game_id].players:
-        games[game_id].discard_card(user_id, card)
-        emit("card_discarded", {"card": card})
+        games[game_id].recycle_card(user_id, card)
+        emit("card_recycled", {"card": card})
         send_game_update(game_id)
     else:
         emit("error", {"message": "Invalid game or user"})

@@ -4,8 +4,9 @@ import json
 
 from flask import Flask, render_template, request, send_from_directory
 from flask_socketio import SocketIO, join_room, leave_room, emit
+from tqdm import tqdm
 
-from artgen.genart import card_filename
+from genart import make_card_art, make_safe_filename
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "abetting irritated diamonds"
@@ -13,6 +14,8 @@ socketio = SocketIO(
     app,
     cors_allowed_origins="*",
 )
+
+VERBOSE_SOCKETS = False
 
 
 # Data structures to store lobby and game information
@@ -29,7 +32,8 @@ class Game:
         with open(f"./decks/{name}.json", "r") as f:
             cards = json.load(f)
             for card in cards:
-                card["Path"] = "art/" + card_filename(name, card)
+                safename = make_safe_filename(card["Name"])
+                card["Path"] = f"art/{name}/{safename}.png"
             return cards
 
     def shuffle_deck(self):
@@ -79,6 +83,15 @@ games: dict[str, Game] = {}
 lobby_users = set()
 
 
+def gen_deck_art(deck_name: str):
+    """Create art for any cards missing art in a deck"""
+    with open(f"./decks/{deck_name}.json", "r") as f:
+        cards = json.load(f)
+        os.makedirs(f"./art/{deck_name}", exist_ok=True)
+        for card in tqdm(cards):
+            make_card_art(deck_name, card)
+
+
 @app.route("/")
 def index():
     deck_files = os.listdir("./decks")
@@ -91,8 +104,9 @@ def index():
 
 @app.route("/art/<path:path>")
 def get_art(path):
-    if os.path.isfile(os.path.join("./art/", path)):
-        return send_from_directory("./art/", path)
+    safe_path = "/".join(make_safe_filename(p) for p in path.split("/"))
+    if os.path.isfile(os.path.join("./art/", safe_path)):
+        return send_from_directory("./art/", safe_path)
     else:
         choices = os.listdir("./art/404s")
         random.seed(path)
@@ -102,12 +116,14 @@ def get_art(path):
 
 @socketio.on("connect")
 def handle_connect(data):
-    print("connect", data, request.sid)
+    if VERBOSE_SOCKETS:
+        print("connect", data, request.sid)
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    print("disconnect", request.sid)
+    if VERBOSE_SOCKETS:
+        print("disconnect", request.sid)
     sid = request.sid
     if sid in sid_userid:
         user_id = sid_userid[sid]
@@ -138,12 +154,14 @@ def handle_disconnect():
 
 @socketio.on("debug")
 def handle_debug(data):
-    print("debug", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("debug", sid_userid[request.sid], data)
 
 
 @socketio.on("join_lobby")
 def handle_join_lobby(data):
-    print("join_lobby", request.sid, data)
+    if VERBOSE_SOCKETS:
+        print("join_lobby", request.sid, data)
     sid = request.sid
     requested_user_id = data["user_id"]
     if requested_user_id not in userid_sid:
@@ -163,7 +181,8 @@ def handle_join_lobby(data):
 
 @socketio.on("create_game")
 def handle_create_game(data):
-    print("create_game", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("create_game", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
@@ -189,7 +208,8 @@ def handle_create_game(data):
 
 @socketio.on("join_game")
 def handle_join_game(data):
-    print("join_game", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("join_game", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
@@ -211,7 +231,8 @@ def handle_join_game(data):
 
 @socketio.on("leave_game")
 def handle_leave_game(data):
-    print("leave_game", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("leave_game", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
@@ -236,7 +257,8 @@ def handle_leave_game(data):
 
 @socketio.on("draw_card")
 def handle_draw_card(data):
-    print("draw_card", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("draw_card", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
@@ -253,7 +275,8 @@ def handle_draw_card(data):
 
 @socketio.on("recycle_card")
 def handle_recycle_card(data):
-    print("recycle_card", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("recycle_card", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]
@@ -268,7 +291,8 @@ def handle_recycle_card(data):
 
 @socketio.on("reveal_card")
 def handle_show_card(data):
-    print("reveal_card", sid_userid[request.sid], data)
+    if VERBOSE_SOCKETS:
+        print("reveal_card", sid_userid[request.sid], data)
     sid = request.sid
     user_id = sid_userid[sid]
     game_id = data["game_id"]

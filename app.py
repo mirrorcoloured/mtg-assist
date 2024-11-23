@@ -82,14 +82,7 @@ userid_sid = {}
 games: dict[str, Game] = {}
 lobby_users = set()
 
-
-def gen_deck_art(deck_name: str):
-    """Create art for any cards missing art in a deck"""
-    with open(f"./decks/{deck_name}.json", "r") as f:
-        cards = json.load(f)
-        os.makedirs(f"./art/{deck_name}", exist_ok=True)
-        for card in tqdm(cards):
-            make_card_art(deck_name, card)
+# HTTP
 
 
 @app.route("/")
@@ -112,6 +105,21 @@ def get_art(path):
         random.seed(path)
         choice = random.choice(choices)
         return send_from_directory("./art/404s", choice)
+
+
+@app.route("/generateart/<deck_name>")
+def gen_deck_art(deck_name: str):
+    """Create art for any cards missing art in a deck"""
+    print(f"Creating art for deck {deck_name}")
+    with open(f"./decks/{deck_name}.json", "r") as f:
+        cards = json.load(f)
+        os.makedirs(f"./art/{deck_name}", exist_ok=True)
+        for card in tqdm(cards):
+            make_card_art(deck_name, card)
+    return "ok"
+
+
+# Sockets
 
 
 @socketio.on("connect")

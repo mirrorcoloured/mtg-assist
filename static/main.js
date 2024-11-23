@@ -177,7 +177,7 @@ function createCardElement(card, in_hand = false) {
 
     const e_description = document.createElement("span");
     e_description.classList.add("card_description")
-    e_description.textContent = card.Description;
+    e_description.innerHTML = card.Description.replaceAll("\n", "<br>");
     e_description.title = card.Description;
     e_carddiv.appendChild(e_description);
 

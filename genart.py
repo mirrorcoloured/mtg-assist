@@ -38,7 +38,7 @@ def card_content(card: dict) -> str:
 
 def make_card_art(deck_name: str, card: dict, art_folder: str = "./art"):
     filename = make_safe_filename(card["Name"]) + ".png"
-    if filename not in os.listdir(art_folder):
+    if filename not in os.listdir(os.path.join(art_folder, deck_name)):
         image_prompt = ollama_chat(
             make_messages(card_content(card)),
             timeout=60,

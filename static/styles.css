@@ -111,6 +111,12 @@ button:hover {
     background-color: #5166aa;
 }
 
+#reset-username {
+    font-size: small;
+    padding: 5px;
+    margin-left: 30px;
+}
+
 select {
     font-size: 1rem;
     padding: 10px 15px;

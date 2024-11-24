@@ -172,7 +172,28 @@ def handle_join_lobby(data):
         print("join_lobby", request.sid, data)
     sid = request.sid
     requested_user_id = data["user_id"]
-    if requested_user_id not in userid_sid:
+    if requested_user_id in userid_sid:
+        emit(
+            "user_id_denied",
+            {
+                "user_id": requested_user_id,
+                "message": f"Username {requested_user_id} taken",
+            },
+        )
+    elif len(str(requested_user_id)) < 1 or len(str(requested_user_id)) > 20:
+        emit(
+            "user_id_denied",
+            {
+                "user_id": requested_user_id,
+                "message": "Username must be between 1 and 20 characters.",
+            },
+        )
+    else:
+        # remove old registration
+        if sid in sid_userid:
+            del userid_sid[sid_userid[sid]]
+            del sid_userid[sid]
+
         # register user
         userid_sid[requested_user_id] = sid
         sid_userid[sid] = requested_user_id
@@ -183,8 +204,6 @@ def handle_join_lobby(data):
         send_lobby_update()
 
         emit("user_id_granted", {"user_id": requested_user_id})
-    else:
-        emit("user_id_denied", {"user_id": requested_user_id})
 
 
 @socketio.on("create_game")

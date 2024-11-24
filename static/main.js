@@ -1,6 +1,9 @@
 const socket = io();
 
-let userId = prompt(`Please choose a username.`);
+let userId = getItem("userId");
+if (!userId) {
+    userId = prompt(`Please choose a username.`);
+}
 let currentGameId = null;
 let hand = [];
 
@@ -11,12 +14,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socket.on("user_id_granted", (data) => {
         console.log("user_id_granted", data);
+        setItem("userId", data.user_id);
     });
 
     socket.on("user_id_denied", (data) => {
         console.log("user_id_denied", data);
-        userId = prompt(`Username ${userId} taken, please choose a new username.`);
+        userId = prompt(`${data.message}. Please choose a new username.`);
         socket.emit("join_lobby", { user_id: userId });
+    });
+
+    if (getItem("lastDeckName")) {
+        console.log("loaded last deck name from storage", getItem("lastDeckName"));
+        document.getElementById("deck-select").value = getItem("lastDeckName");
+    }
+    document.getElementById("deck-select").addEventListener("input", (e) => {
+        setItem("lastDeckName", document.getElementById("deck-select").value);
     });
 
     // IN LOBBY
@@ -39,6 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const myb = document.createElement("b");
         myb.appendChild(e_my_li);
         userList.appendChild(myb);
+        const e_reset_userid = document.createElement("button");
+        e_reset_userid.id = "reset-username";
+        e_reset_userid.textContent = "Reset username";
+        e_reset_userid.addEventListener("click", (e) => {
+            removeItem("userId");
+            userId = prompt(`Please choose a new username.`);
+            socket.emit("join_lobby", { user_id: userId });
+        });
+        e_my_li.appendChild(e_reset_userid);
         data.users.forEach((user) => {
             if (user != userId) {
                 const e_user_li = document.createElement("li");
@@ -55,17 +76,11 @@ document.addEventListener("DOMContentLoaded", () => {
             e_game_li.textContent = game;
             e_game_li.classList.add("gamelink");
             gameList.appendChild(e_game_li);
-            e_game_li.addEventListener("click", e => {
+            e_game_li.addEventListener("click", (e) => {
                 let gameId = document.getElementById("game-id-input").value;
                 socket.emit("join_game", { game_id: game, user_id: userId });
-            })
+            });
         });
-    });
-
-    // Request to join game
-    document.getElementById("join-game").addEventListener("click", () => {
-        let gameId = document.getElementById("game-id-input").value;
-        socket.emit("join_game", { game_id: gameId, user_id: userId });
     });
 
     // Response to join game
@@ -125,15 +140,15 @@ document.addEventListener("DOMContentLoaded", () => {
         for (const [playerId, cards] of Object.entries(data.revealed_cards)) {
             const e_player_li = document.createElement("li");
             revealedList.appendChild(e_player_li);
-            
+
             const e_span = document.createElement("span");
             e_span.textContent = `Player ${playerId} revealed:`;
             e_player_li.appendChild(e_span);
-            
+
             const e_ul = document.createElement("ul");
             e_ul.classList.add("card-list");
             e_player_li.appendChild(e_ul);
-            
+
             for (const card of cards) {
                 const e_card_li = document.createElement("li");
                 e_ul.appendChild(e_card_li);
@@ -166,25 +181,25 @@ function createCardElement(card, in_hand = false) {
     e_carddiv.classList.add("card_div");
 
     const e_name = document.createElement("span");
-    e_name.classList.add("card_name")
+    e_name.classList.add("card_name");
     e_name.textContent = card.Name;
     e_carddiv.appendChild(e_name);
 
     const e_image = document.createElement("img");
-    e_image.classList.add("card_image")
+    e_image.classList.add("card_image");
     e_image.src = card.Path;
     e_carddiv.appendChild(e_image);
 
     const e_description = document.createElement("span");
-    e_description.classList.add("card_description")
+    e_description.classList.add("card_description");
     e_description.innerHTML = card.Description.replaceAll("\n", "<br>");
     e_description.title = card.Description;
     e_carddiv.appendChild(e_description);
 
     if (in_hand) {
         const e_handcard_div = document.createElement("div");
-        e_handcard_div.classList.add("hand-card")
-        e_handcard_div.appendChild(e_carddiv)
+        e_handcard_div.classList.add("hand-card");
+        e_handcard_div.appendChild(e_carddiv);
 
         const e_actions = document.createElement("div");
         e_actions.classList.add("card-actions");
@@ -194,24 +209,24 @@ function createCardElement(card, in_hand = false) {
         e_recycle.classList.add("card-action");
         e_recycle.textContent = "Recycle";
         // Request to recycle card
-        e_recycle.addEventListener("click", e => {
-            console.log("click", "recycle", {card, hand, e})
+        e_recycle.addEventListener("click", (e) => {
+            console.log("click", "recycle", { card, hand, e });
             socket.emit("recycle_card", { game_id: currentGameId, user_id: userId, card: card });
             hand = hand.filter((c) => c != JSON.stringify(card));
             updateHand();
-        })
+        });
         e_actions.appendChild(e_recycle);
 
         const e_reveal = document.createElement("button");
         e_reveal.classList.add("card-action");
         e_reveal.textContent = "Reveal";
         // Request to reveal card
-        e_reveal.addEventListener("click", e => {
-            console.log("click", "reveal", {card, hand, e})
+        e_reveal.addEventListener("click", (e) => {
+            console.log("click", "reveal", { card, hand, e });
             socket.emit("reveal_card", { game_id: currentGameId, user_id: userId, card: card });
             hand = hand.filter((c) => c != JSON.stringify(card));
             updateHand();
-        })
+        });
         e_actions.appendChild(e_reveal);
         return e_handcard_div;
     } else {
@@ -228,4 +243,20 @@ function updateHand() {
         li.appendChild(createCardElement(card, (in_hand = true)));
         handDiv.appendChild(li);
     });
+}
+
+function setItem(key, value) {
+    return window.localStorage.setItem(key, value);
+}
+
+function getItem(key) {
+    return window.localStorage.getItem(key);
+}
+
+function removeItem(key) {
+    return window.localStorage.removeItem(key);
+}
+
+function clearStorage(key) {
+    return window.localStorage.clear();
 }

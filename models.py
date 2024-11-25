@@ -119,24 +119,12 @@ def hash_text(prompt):
 def lcm(
     filepath: Path,
     promptpos: str,
-    promptneg: str = "poor quality, amateur, blurry, ugly, bad hand, abstract",
-    seed: int = "0",
-    cfg: int = "1.5",
-    steps: int = "7",
-    scheduler: str = "sgm_uniform",
-    checkpoint: str = "sd15\\realcartoon3d_v11.safetensors",
     overwrite: bool = False,
 ):
     with open("artgen/lcm.json", "r") as f:
         prompt = json.load(f)
 
-    prompt["4"]["inputs"]["ckpt_name"] = checkpoint
-    prompt["3"]["inputs"]["scheduler"] = scheduler
-    prompt["3"]["inputs"]["steps"] = steps
-    prompt["3"]["inputs"]["cfg"] = cfg
-    prompt["3"]["inputs"]["seed"] = seed
     prompt["6"]["inputs"]["text"] = promptpos
-    prompt["7"]["inputs"]["text"] = promptneg
 
     outputs = get_images(prompt)
     output_bytes = outputs["20"][0]

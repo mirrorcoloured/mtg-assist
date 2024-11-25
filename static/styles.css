@@ -133,7 +133,7 @@ select {
     border: 3px solid black;
     border-radius: 5px;
     width: 250px;
-    height: 450px;
+    height: 350px;
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     display: flex;
     flex-direction: column;

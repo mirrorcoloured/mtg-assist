@@ -2,8 +2,9 @@
   "3": {
     "inputs": {
       "seed": 0,
-      "steps": 7,
-      "cfg": 1.5,
+      "control_after_generate": "static",
+      "steps": 12,
+      "cfg": 1.2,
       "sampler_name": "lcm",
       "scheduler": "sgm_uniform",
       "denoise": 1,
@@ -40,7 +41,7 @@
   },
   "5": {
     "inputs": {
-      "width": 512,
+      "width": 768,
       "height": 512,
       "batch_size": 1
     },
@@ -64,7 +65,7 @@
   },
   "7": {
     "inputs": {
-      "text": "poor quality, amateur, blurry, ugly, bad hand, abstract",
+      "text": "lowres, text, error, missing fingers, extra digit, fewer digits, cropped, (worst quality, low quality:1.4) , jpeg artifacts, signature, bad anatomy, extra legs, extra arms, extra fingers, poorly drawn hands, poorly drawn feet, disfigured, out of frame, tiling, bad art, deformed, mutated, blurry, fuzzy, misshaped, mutant, gross, disgusting, text, watermark, artist name, copyright name, name",
       "clip": [
         "43",
         1
